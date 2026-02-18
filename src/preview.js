@@ -14,6 +14,7 @@ export default class Preview {
     pages,
     layout,
     paper,
+    mutationQueue,
   }) {
 
     // * From config:
@@ -46,12 +47,15 @@ export default class Preview {
     this._paperFlow = layout.paperFlow;
     this._overlayFlow = layout.overlayFlow;
     this._paper = paper;
+    this._mutationQueue = mutationQueue;
 
     this._hasFrontPage = !!layout.frontpageTemplate;
 
   }
 
   create() {
+    // Apply deferred DOM mutations registered during pagination calculations.
+    this._mutationQueue?.flush();
     this._processFrontPage();
     this._processPages();
     (this._config.mask === true || this._config.mask === 'true') && this._addMask();

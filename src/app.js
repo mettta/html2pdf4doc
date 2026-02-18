@@ -14,6 +14,7 @@ import isTruthy from './utils/isTruthy.js';
 import buildAppConfig from './appConfig.js';
 import { normalizeLegacyConfigParams } from './config.js';
 import { forceLayoutParticipation } from './utils/forceLayoutParticipation.js';
+import { createMutationQueue } from './mutations/queue.js';
 
 const CONSOLE_CSS_LABEL = `color:Gray;border:1px solid;`
 
@@ -158,6 +159,8 @@ export default class App {
 
     this.debugMode && console.time("⏱️ Pages time");
     this.debugMode && console.group('%c Pages ', CONSOLE_CSS_LABEL); // Collapsed
+    // Defer selected DOM writes from pagination and apply them in Preview stage.
+    const mutationQueue = createMutationQueue();
     const pages = new Pages({
       config: this.config,
       DOM: DOM,
@@ -166,6 +169,7 @@ export default class App {
       layout: layout,
       referenceHeight: paper.bodyHeight,
       referenceWidth: paper.bodyWidth,
+      mutationQueue,
     }).calculate();
     this.debugMode && console.groupEnd();
     this.debugMode && console.timeEnd("⏱️ Pages time");
@@ -182,6 +186,7 @@ export default class App {
       layout: layout,
       paper: paper,
       pages: pages,
+      mutationQueue,
     }).create();
     this.debugMode && console.groupEnd();
     this.debugMode && console.timeEnd("⏱️ Preview time");

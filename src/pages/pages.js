@@ -1,5 +1,6 @@
 import arrayFromString from './arrayFromString.js';
 import * as Logging from '../utils/logging.js';
+import { createHideIgnorableSpacerParagraphMutation } from '../mutations/commands.js';
 
 const CONSOLE_CSS_COLOR_PAGES = '#66CC00';
 const CONSOLE_CSS_PRIMARY_PAGES = `color: ${CONSOLE_CSS_COLOR_PAGES};font-weight:bold`;
@@ -18,7 +19,8 @@ export default class Pages {
     selector,
     layout,
     referenceWidth,
-    referenceHeight
+    referenceHeight,
+    mutationQueue,
   }) {
 
     Object.assign(this, Logging);
@@ -48,6 +50,7 @@ export default class Pages {
 
     this._referenceWidth = referenceWidth;
     this._referenceHeight = referenceHeight;
+    this._mutationQueue = mutationQueue;
 
     // todo
     // 1) move to config
@@ -311,6 +314,15 @@ export default class Pages {
         element);
       return
     };
+
+    if (this._node.isIgnorableSpacerParagraph(element)) {
+      this._debug._registerPageStart && console.log(`🚩 [registerAsPageStart] pageStart candidate is an ignorable spacer paragraph. SKIP registering.`, element);
+      // Register deferred DOM write: this paragraph is ignored as page-start and hidden later in Preview.
+      this._mutationQueue?.enqueue(
+        createHideIgnorableSpacerParagraphMutation({ DOM: this._DOM, element })
+      );
+      return
+    }
 
     let pageStart = element;
 

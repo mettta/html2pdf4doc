@@ -420,6 +420,78 @@ export function getLastChildrenChain(node, stopFn = null, { skipFloat = false } 
   return chain
 }
 
+/**
+ *  Special-case compatibility heuristic for user-generated HTML.
+ *  Returns true only for an ignorable empty spacer paragraph (<P>) that can be
+ *  safely skipped as a page-start candidate.
+ *
+ *  Why this exists:
+ *  - some editors insert empty paragraphs as spacing artifacts;
+ *  - such paragraph can become a page-start candidate near a forced break
+ *    (for example, before a heading that must start a new page);
+ *  - this may produce an unjustified blank page with only that empty paragraph.
+ *
+ *  Criteria:
+ *  - node is <P>;
+ *  - structurally empty (no element children, no non-whitespace text;
+ *    comments/non-visual nodes are ignored);
+ *  - resulting layout box height is zero (offsetHeight === 0).
+ *
+ *  Any visible/content-carrying paragraph must return false.
+ */
+export function isIgnorableSpacerParagraph(element) {
+    if (!element || this._DOM.getElementTagName(element) !== 'P') {
+      return false;
+    }
+
+    if (!this.isStructurallyEmptyNode(element)) {
+      return false;
+    }
+
+    const hasZeroHeight = this._DOM.getElementOffsetHeight(element) === 0;
+    if (!hasZeroHeight) {
+      return false;
+    }
+
+    return true;
+  }
+
+/**
+ * Checks whether a node is structurally empty by child-node composition.
+ *
+ * INTENTION: Distinguish truly empty wrappers from nodes carrying real content.
+ *
+ * RULES:
+ * - any element child => non-empty;
+ * - text nodes are allowed only when they are whitespace-only;
+ * - comments and other non-visual node types are ignored.
+ *
+ * EXPECTED_RESULT:
+ * - returns true when the node has no element children and no significant text.
+ *
+ * @this {Node}
+ * @param {Element} node
+ * @returns {boolean}
+ */
+export function isStructurallyEmptyNode(node) {
+  const childNodes = this._DOM.getChildNodes(node);
+  for (const child of childNodes) {
+    if (child.nodeType === Node.ELEMENT_NODE) {
+      return false;
+    }
+    if (child.nodeType === Node.TEXT_NODE) {
+      if ((child.nodeValue || '').trim() !== '') {
+        return false;
+      }
+      continue; // whitespace-only text node
+    }
+    // Ignore comments and other non-rendering nodes.
+    continue;
+  }
+
+  return true;
+}
+
 // 🔒 private
 
 /**
