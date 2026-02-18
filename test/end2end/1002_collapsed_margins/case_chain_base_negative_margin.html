@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="">
+<head>
+  <meta charset="utf-8">
+  <title>case_negative_margin_compensation</title>
+  <link rel="stylesheet" href="../../shared/css/main.css">
+  <link rel="stylesheet" href="elements.css">
+<style>
+.child.top { margin-top: -12px; }
+.child.bottom { margin-bottom: -12px; }
+  </style>
+
+  <script defer
+          data-debug-mode="true"
+          data-markup-debug-mode="true"
+          data-console-assert="true"
+          data-print-height='300px'
+          data-print-width='600px'
+          data-print-left-margin= '50px'
+          data-print-right-margin= '50px'
+          data-print-top-margin= '50px'
+          data-print-bottom-margin= '50px'
+          data-print-font-size='16px'
+          src="../../../dist/bundle.js"></script>
+</head>
+<body>
+  <!-- 1st page -->
+  <div class="e-1-page">
+    <p class="page-cover">
+      Case: negative margin collapses with the parent (tops equal).
+    </p>
+  </div>
+  <!-- 2nd page -->
+  <div class="parent" data-testid="starts_2" expected-zeroed-margin-top="true">
+    <div class="child top" expected-zeroed-margin-top="true">
+      <div class="child-content" expected-zeroed-margin-top="true">content</div>
+    </div>
+  </div>
+  <div class="page-ender" data-testid="ends_2">
+    The first line of a paragraph that should fit entirely on the page. <br>
+    Second line. <br>
+    Last line. <br>
+  </div>
+  <!-- 3rd page -->
+  <div class="page-starter" data-testid="starts_3">
+    The first line of a paragraph that should fit entirely on the page. <br>
+    Second line. <br>
+    Last line. <br>
+  </div>
+    <div class="parent" data-testid="ends_3" expected-zeroed-margin-bottom="true">
+    <div class="child bottom" expected-zeroed-margin-bottom="true">
+      <div class="child-content" expected-zeroed-margin-bottom="true">content</div>
+    </div>
+  </div>
+  <!-- 4th page -->
+  <div class="page-starter e-4-page" data-testid="starts_4">
+    The last element is on the 4rd page.
+  </div>
+
+</body>
+</html>

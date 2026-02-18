@@ -354,6 +354,48 @@ class Helper:
         assert attr_value is None, \
             f"Expected element to not have [{attribute}], got '{attr_value}'"
 
+    def assert_elements_attribute_not_contains(
+        self,
+        selector_attribute: str,
+        attribute_to_check: str,
+        forbidden_substring: str
+    ) -> None:
+        # Find all elements with the selector attribute and ensure the checked
+        # attribute does not contain the forbidden substring.
+        elements = self.test_case.find_elements(
+            f'//*[@{selector_attribute}]',
+            by=By.XPATH,
+        )
+        for element in elements:
+            attr_value = element.get_attribute(attribute_to_check) or ''
+            assert forbidden_substring not in attr_value, \
+                (
+                    f"Expected [{attribute_to_check}] to not contain '{forbidden_substring}', "
+                    f"got '{attr_value}' in element: {element.get_attribute('outerHTML')}"
+                )
+
+    def assert_elements_attribute_contains(
+        self,
+        selector_attribute: str,
+        attribute_to_check: str,
+        expected_substring: str
+    ) -> None:
+        # Find all elements with the selector attribute and ensure the checked
+        # attribute contains the expected substring.
+        elements = self.test_case.find_elements(
+            f'//*[@{selector_attribute}]',
+            by=By.XPATH,
+        )
+        for element in elements:
+            attr_value = element.get_attribute(attribute_to_check)
+            assert attr_value is not None, \
+                f"Expected element to have [{attribute_to_check}]"
+            assert expected_substring in attr_value, \
+                (
+                    f"Expected [{attribute_to_check}] to contain '{expected_substring}', "
+                    f"got '{attr_value}' in element: {element.get_attribute('outerHTML')}"
+                )
+
     def assert_element_starts_page(self, element_xpath: str, page_number: int, element_order: int = 1) -> None:
         attr_value = self.test_case.get_attribute(
             f'({_content_flow_}{element_xpath})[{element_order}]',

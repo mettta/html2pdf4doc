@@ -1,0 +1,91 @@
+.e-2-page-start {
+  background-color: #ff00ff;
+}
+.e-2-page-end {
+  height: 60px;
+  background-color: #00ff00;
+}
+.e-3-page {
+  height: 60px;
+  background-color: #ff66ff;
+}
+
+
+:root {
+  --base-margin: 20px;
+  --page-h: 200px;
+  --buddy-h: 60px;
+  --element-h: calc(var(--page-h) - var(--buddy-h));
+}
+
+body {
+  font-weight: 16px;
+  line-height: 20px;
+}
+
+
+p {
+    display: block;
+    margin-block-start: var(--base-margin);
+    margin-block-end: var(--base-margin);
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+
+
+
+.parent {
+  background-color: #ff00ff;
+}
+.parent * {
+  background-color: rgba(255,255,255,.2);
+  outline: solid 1px rgba(255,0,255,.3);
+  margin-inline: 8px;
+}
+.e-1-page-inner,
+.page-cover {
+  background-color: #00ffff;
+  height: calc(var(--page-h) - var(--base-margin));
+}
+.page-starter {
+  background-color: #00ff00;
+  height: var(--buddy-h);
+}
+.page-ender {
+  background-color: #ff9900;
+  height: var(--buddy-h);
+  overflow: hidden; /* to prevent text from affecting height on different platforms */
+}
+
+.child {
+  /* height: 120px; */
+  background-color: #ffff00;
+}
+.child-content {
+  display: block;
+  margin-block-start: var(--base-margin);
+  margin-block-end: var(--base-margin);
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  /*
+    One of the margins (the one at the edge of the page) will collapse,
+    so we subtract only one margin (the one in the center of the page)
+    from the height of the page.
+  */
+  height: calc(var(--element-h) - var(--base-margin) - var(--amendment, 0px));
+}
+
+
+
+
+.top {
+  margin-top: 16px;
+}
+
+.bottom {
+  margin-bottom: 16px;
+}
+
+
+

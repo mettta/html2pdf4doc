@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="">
+<head>
+  <meta charset="utf-8">
+  <title>case_relative_compensation_bottom</title>
+  <link rel="stylesheet" href="../../shared/css/main.css">
+  <link rel="stylesheet" href="elements.css">
+<style>
+.child { position: relative; bottom: -12px; margin-bottom: 12px; }
+  </style>
+
+  <script defer
+          data-debug-mode="true"
+          data-markup-debug-mode="true"
+          data-console-assert="true"
+          data-print-height='300px'
+          data-print-width='600px'
+          data-print-left-margin= '50px'
+          data-print-right-margin= '50px'
+          data-print-top-margin= '50px'
+          data-print-bottom-margin= '50px'
+          data-print-font-size='16px'
+          src="../../../dist/bundle.js"></script>
+</head>
+<body>
+  <!-- 1st page -->
+  <div class="e-1-page">
+    <p class="e-1-page-inner">
+      Case: position: relative/bottom compensates margin to make bottoms equal. Expectation: heuristic would zero; known false-positive (not handled).
+    </p>
+  </div>
+  <!-- 2nd page -->
+  <div class="e-2-page-start" data-testid="starts_2">
+    <div class="child"><div class="child-content">content</div></div>
+  </div>
+  <div class="e-2-page-end" data-testid="ends_2">
+    The first line of a paragraph that should fit entirely on the page. <br>
+    Second line. <br>
+    Last line. <br>
+  </div>
+  <!-- 3rd page -->
+  <div class="e-3-page" data-testid="starts_3">
+    The last element is on the 3rd page.
+  </div>
+
+</body>
+</html>
