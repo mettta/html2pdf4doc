@@ -250,6 +250,10 @@ export default class Preview {
 
     if (currentPageFirstElement) {
       this._DOM.setStyles(currentPageFirstElement, {'margin-top': ['0', 'important']});
+      const topChain = this._node.getTopCollapseChain(currentPageFirstElement, this._root);
+      topChain.forEach((element) => {
+        this._DOM.setStyles(element, {'margin-top': ['0', 'important']});
+      });
     } else {
       this.strictAssert(0, '[preview] [_preventPageOverflow] current page First Element do not pass! page:', pageIndex)
     }
@@ -257,6 +261,10 @@ export default class Preview {
     if (previousPageLastElement) {
       // this._node.markPageEnd(previousPageLastElement, pageIndex + 'test');
       this._DOM.setStyles(previousPageLastElement, {'margin-bottom': ['0', 'important']});
+      const bottomChain = this._node.getBottomCollapseChain(previousPageLastElement, this._root);
+      bottomChain.forEach((element) => {
+        this._DOM.setStyles(element, {'margin-bottom': ['0', 'important']});
+      });
       if (this._node.isIMG(previousPageLastElement)) {
         // Inline images sit on the text baseline, leaving a descender gap;
         // `vertical-align: top` removes that extra bottom space.

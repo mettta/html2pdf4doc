@@ -32,6 +32,7 @@ const debugConfig = {
     getters: false,
     markers: false,
     media: false,
+    normalizer: false,
     pageBreaks: false,
     positioning: false,
     selectors: false,
