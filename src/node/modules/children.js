@@ -319,7 +319,7 @@ export function getSplitChildren(node, firstPageBottom, fullPageHeight, root) {
 /**
  * @this {Node}
  */
-export function getFirstChildrenChain(node) {
+export function getFirstChildrenChain(node, stopFn = null, { skipFloat = false } = {}) {
   const chain = []
 
   if (!node || !this || !this._DOM) {
@@ -332,9 +332,19 @@ export function getFirstChildrenChain(node) {
   while (current) {
     let child = this._DOM.getFirstElementChild(current)
 
-    // 🤖 Skip invisible shells so the traversal hugs the actual flow boundary.
-    while (child && this.shouldSkipFlowElement(child, { context: 'getFirstChildren:firstChild' })) {
-      child = this._DOM.getRightNeighbor(child)
+    while (child) {
+      // 🤖 Skip invisible shells so the traversal hugs the actual flow boundary.
+      if (this.shouldSkipFlowElement(child, { context: 'getFirstChildren:firstChild' })) {
+        child = this._DOM.getRightNeighbor(child)
+        continue
+      }
+      // Optional: allow callers (e.g. collapse heuristics) to skip floats
+      // without breaking the chain; the next sibling becomes the new candidate.
+      if (skipFloat && this.isRegisteredFloatElement(child)) {
+        child = this._DOM.getRightNeighbor(child)
+        continue
+      }
+      break
     }
 
     if (!child) {
@@ -344,6 +354,10 @@ export function getFirstChildrenChain(node) {
 
     if (this.isSyntheticTextWrapper(child)) {
       // 🤖 Hitting a wrapped text node means the linear flow turns into inline glyphs.
+      break
+    }
+
+    if (stopFn && stopFn(child, current, chain)) {
       break
     }
 
@@ -357,7 +371,7 @@ export function getFirstChildrenChain(node) {
 /**
  * @this {Node}
  */
-export function getLastChildrenChain(node) {
+export function getLastChildrenChain(node, stopFn = null, { skipFloat = false } = {}) {
   const chain = []
 
   if (!node || !this || !this._DOM) {
@@ -370,9 +384,19 @@ export function getLastChildrenChain(node) {
   while (current) {
     let child = this._DOM.getLastElementChild(current)
 
-    // 🤖 Skip invisible shells so the descent hugs the lower flow outline.
-    while (child && this.shouldSkipFlowElement(child, { context: 'getLastChildren:lastChild' })) {
-      child = this._DOM.getLeftNeighbor(child)
+    while (child) {
+      // 🤖 Skip invisible shells so the descent hugs the lower flow outline.
+      if (this.shouldSkipFlowElement(child, { context: 'getLastChildren:lastChild' })) {
+        child = this._DOM.getLeftNeighbor(child)
+        continue
+      }
+      // Optional: allow callers (e.g. collapse heuristics) to skip floats
+      // without breaking the chain; the previous sibling becomes the new candidate.
+      if (skipFloat && this.isRegisteredFloatElement(child)) {
+        child = this._DOM.getLeftNeighbor(child)
+        continue
+      }
+      break
     }
 
     if (!child) {
@@ -382,6 +406,10 @@ export function getLastChildrenChain(node) {
 
     if (this.isSyntheticTextWrapper(child)) {
       // 🤖 Encountering a wrapped text node signals the flow collapses into inline text.
+      break
+    }
+
+    if (stopFn && stopFn(child, current, chain)) {
       break
     }
 

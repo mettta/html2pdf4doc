@@ -5,6 +5,8 @@ const _isDebug = debugFor('flowFilters');
 
 // Cache marker so each element is evaluated at most once per run.
 const FLOW_SKIP_FLAG = '__html2pdf4docFlowFilter';
+// Cache marker for floats; used by consumers that want to handle floats separately.
+const FLOW_FLOAT_FLAG = '__html2pdf4docFloat';
 
 const SKIP_RULES = [
   {
@@ -34,6 +36,16 @@ const SKIP_RULES = [
       reason: 'visibility:collapse',
       message: '* visibility:collapse — skipped',
     },
+  },
+  {
+    test: (style, element) => {
+      if (style.float && style.float !== 'none') {
+        // Mark floats without skipping: some paths handle them explicitly later.
+        element[FLOW_FLOAT_FLAG] = true;
+      }
+      return false;
+    },
+    cache: null,
   },
 ];
 
@@ -81,7 +93,7 @@ export function shouldSkipFlowElement(element, { context = '', computedStyle } =
     return false;
   }
   for (const rule of SKIP_RULES) {
-    if (rule.test(style)) {
+    if (rule.test(style, element)) {
       element[FLOW_SKIP_FLAG] = rule.cache;
       logSkip(this, context, rule.cache, element);
       return true;
@@ -89,4 +101,11 @@ export function shouldSkipFlowElement(element, { context = '', computedStyle } =
   }
 
   return false;
+}
+
+/**
+ * @this {Node}
+ */
+export function isRegisteredFloatElement(element) {
+  return !!element?.[FLOW_FLOAT_FLAG];
 }

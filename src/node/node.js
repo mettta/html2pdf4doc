@@ -13,6 +13,7 @@ import * as Fitters from './modules/fitters.js';
 import * as PageBreaks from './modules/pagebreaks.js';
 import * as Children from './modules/children.js';
 import * as Media from './modules/media.js';
+import * as Normalizer from './modules/normalizer.js';
 import * as Slicers from './modules/slicers.js';
 import * as FlowFilters from './modules/flowfilters.js';
 import * as Cache from './modules/cache.js';
@@ -72,6 +73,7 @@ export default class Node {
     Object.assign(this, PageBreaks);
     Object.assign(this, Children);
     Object.assign(this, Media);
+    Object.assign(this, Normalizer);
     Object.assign(this, Slicers);
     Object.assign(this, FlowFilters);
     Object.assign(this, Cache);
