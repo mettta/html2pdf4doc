@@ -312,6 +312,14 @@ export default class Pages {
       return
     };
 
+    if (this._node.isIgnorableSpacerParagraph(element)) {
+      this._debug._registerPageStart && console.log(`🚩 [registerAsPageStart] pageStart candidate is an ignorable spacer paragraph. SKIP registering.`, element);
+      // TODO: defer mutation to the end of the algorithm, and do it in batch, to avoid multiple forced reflows.
+      this._DOM.setStyles(element, {'display': ['none', 'important']});
+      this._DOM.addClasses(element, '🕶️');
+      return
+    }
+
     let pageStart = element;
 
     if (improveResult) {
