@@ -381,15 +381,34 @@ export default class Paragraph {
     const cashInlineLineHeight = wrapper.style.lineHeight;
     wrapper.style.lineHeight = 2;
 
+    // Cache geometry for this single measurement pass.
+    // We read layout from the browser only once per element and reuse it in comparisons/logs.
+    const rectCache = new WeakMap();
+    const getRectCached = (element) => {
+      if (!element) return null;
+      const cached = rectCache.get(element);
+      if (cached) return cached;
+      const rect = this._DOM.getElementBCR(element);
+      rectCache.set(element, rect);
+      return rect;
+    };
+
+    // Line start detection in Firefox is unreliable via offsetTop for inline fragments.
+    // Compute it from DOMRect:
+    const getTopCached = (element) => getRectCached(element)?.top;
+    const getBottomCached = (element) => getRectCached(element)?.bottom;
+
     // Split the splittedItem into lines.
     // Let's find the elements that start a new line.
 
     const newLineStartNumbers = wrappedWordsArray.reduce(
       (result, currentWord, currentIndex) => {
-        const prevTop = (currentIndex > 0) ? wrappedWordsArray[currentIndex - 1].offsetTop : undefined;
-        const prevHth = (currentIndex > 0) ? wrappedWordsArray[currentIndex - 1].offsetHeight : undefined;
-        const currTop = currentWord.offsetTop;
-        if (currentIndex > 0 && (prevTop + prevHth) <= currTop) {
+        const prevWord = currentIndex > 0 ? wrappedWordsArray[currentIndex - 1] : null;
+        // * prevBottom <= currTop means the next token starts a new line.
+        const prevBottom = currentIndex > 0 ? getBottomCached(prevWord) : undefined;
+        const currTop = getTopCached(currentWord);
+        const isNewLine = (currentIndex > 0) ? (prevBottom <= currTop) : false;
+        if (isNewLine) {
           result.push(currentIndex);
         }
         return result;
