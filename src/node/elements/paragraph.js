@@ -107,33 +107,43 @@ export default class Paragraph {
     // * that fit into the same row:
     const groupedPartiallyLinedChildren = partiallyLinedChildren.reduce(
       (result, currentElement, currentIndex, array) => {
-        if (!result) {
-          result = []
+
+        // * If this is the very beginning, we start a new line:
+        if (!result.length) {
+          result = [[currentElement]];
+          this._debug._ && console.log('%c➡️ ◼️ start the first line:', 'font-weight: bold; color: yellow; background-color: #808080;', currentElement);
+          return result;
         }
+
+        const currentLine = result.at(-1);
 
         // * If BR is encountered, we start a new empty line:
         if(this._DOM.getElementTagName(currentElement) === 'BR' ) {
-          if (!result.length) result.push([]);
-          result.at(-1).push(currentElement);
-          result.push([]); // => will be: result.at(-1).length === 0;
-          this._debug._ && console.log('br; push:', currentElement);
+          currentLine.push(currentElement);
+          result.push([]); // => will be: currentLine.length === 0;
+          this._debug._ && console.log('↩️ (BR) add to line last element:', currentElement);
           return result;
         }
 
-        // * If this is the beginning, or if a new line:
-        if(!result.length || this._node.isLineChanged(result.at(-1).at(-1), currentElement)) {
+        // * If the last element was BR, we end current line and start a new one:
+        if(currentLine.length === 0) {
+          this._debug._ && console.log('⬆️ add to line 1st element:', currentElement);
+          currentLine.push(currentElement);
+          return result;
+        }
+
+        const isVerticalDrop = this._node.isVerticalDrop(currentLine.at(-1), currentElement);
+
+        // * If this is a new line:
+        if(isVerticalDrop) {
           result.push([currentElement]);
-          this._debug._ && console.log('◼️ start new line:', currentElement);
+          this._debug._ && console.log('%c➡️ ◼️ start new line with current:', 'font-weight: bold; color: yellow; background-color: #808080;', currentElement);
           return result;
         }
 
-        // TODO: isLineChanged vs isLineKept: можно сделать else? они противоположны
-        if(
-          result.at(-1).length === 0 // the last element was BR
-          || (result.length && this._node.isLineKept(result.at(-1).at(-1), currentElement))
-        ) {
-          this._debug._ && console.log('⬆ add to line:', currentElement);
-          result.at(-1).push(currentElement);
+        if((!isVerticalDrop)) {
+          this._debug._ && console.log('⬆️ add to line:', currentElement);
+          currentLine.push(currentElement);
           return result;
         }
 
