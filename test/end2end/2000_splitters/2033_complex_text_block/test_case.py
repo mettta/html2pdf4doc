@@ -28,7 +28,7 @@ text_group = ("//html2pdf4doc-text-group")
 # 6 lines are divided into 4 groups (2 lines first and last form a group)
 lines_1_2 = '//html2pdf4doc-text-group[@data-child="0"]'
 lines_3 = '//html2pdf4doc-text-group[@data-child="1"]'
-lines_4 = '//span[@data-child="2"]'
+lines_4 = '//html2pdf4doc-text-group[@data-child="2"]'
 lines_5_6 = '//html2pdf4doc-text-group[@data-child="3"]'
 
 
