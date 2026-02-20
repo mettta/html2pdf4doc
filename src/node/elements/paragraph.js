@@ -107,33 +107,43 @@ export default class Paragraph {
     // * that fit into the same row:
     const groupedPartiallyLinedChildren = partiallyLinedChildren.reduce(
       (result, currentElement, currentIndex, array) => {
-        if (!result) {
-          result = []
+
+        // * If this is the very beginning, we start a new line:
+        if (!result.length) {
+          result = [[currentElement]];
+          this._debug._ && console.log('%c➡️ ◼️ start the first line:', 'font-weight: bold; color: yellow; background-color: #808080;', currentElement);
+          return result;
         }
+
+        const currentLine = result.at(-1);
 
         // * If BR is encountered, we start a new empty line:
         if(this._DOM.getElementTagName(currentElement) === 'BR' ) {
-          if (!result.length) result.push([]);
-          result.at(-1).push(currentElement);
-          result.push([]); // => will be: result.at(-1).length === 0;
-          this._debug._ && console.log('br; push:', currentElement);
+          currentLine.push(currentElement);
+          result.push([]); // => will be: currentLine.length === 0;
+          this._debug._ && console.log('↩️ (BR) add to line last element:', currentElement);
           return result;
         }
 
-        // * If this is the beginning, or if a new line:
-        if(!result.length || this._node.isLineChanged(result.at(-1).at(-1), currentElement)) {
+        // * If the last element was BR, we end current line and start a new one:
+        if(currentLine.length === 0) {
+          this._debug._ && console.log('⬆️ add to line 1st element:', currentElement);
+          currentLine.push(currentElement);
+          return result;
+        }
+
+        const isVerticalDrop = this._node.isVerticalDrop(currentLine.at(-1), currentElement);
+
+        // * If this is a new line:
+        if(isVerticalDrop) {
           result.push([currentElement]);
-          this._debug._ && console.log('◼️ start new line:', currentElement);
+          this._debug._ && console.log('%c➡️ ◼️ start new line with current:', 'font-weight: bold; color: yellow; background-color: #808080;', currentElement);
           return result;
         }
 
-        // TODO: isLineChanged vs isLineKept: можно сделать else? они противоположны
-        if(
-          result.at(-1).length === 0 // the last element was BR
-          || (result.length && this._node.isLineKept(result.at(-1).at(-1), currentElement))
-        ) {
-          this._debug._ && console.log('⬆ add to line:', currentElement);
-          result.at(-1).push(currentElement);
+        if((!isVerticalDrop)) {
+          this._debug._ && console.log('⬆️ add to line:', currentElement);
+          currentLine.push(currentElement);
           return result;
         }
 
@@ -195,8 +205,11 @@ export default class Paragraph {
           newLine = arr[0];
           newLine.setAttribute('role', '🚫');
           this.strictAssert(arr.length == 0, 'The string cannot be empty (_splitComplexTextBlockIntoLines)')
-        } else if (arr.length == 1) {
-          newLine = arr[0];
+        // } else if (arr.length == 1) {
+        //   newLine = arr[0];
+        // * Wrap every split line in textGroup to stabilize measurements:
+        // * each line gets a block-level wrapper, while inline flow is preserved inside the group,
+        // * keeping the original visual appearance.`
         } else {
           const group = this._node.createTextGroup();
           newLine = group;
@@ -368,15 +381,34 @@ export default class Paragraph {
     const cashInlineLineHeight = wrapper.style.lineHeight;
     wrapper.style.lineHeight = 2;
 
+    // Cache geometry for this single measurement pass.
+    // We read layout from the browser only once per element and reuse it in comparisons/logs.
+    const rectCache = new WeakMap();
+    const getRectCached = (element) => {
+      if (!element) return null;
+      const cached = rectCache.get(element);
+      if (cached) return cached;
+      const rect = this._DOM.getElementBCR(element);
+      rectCache.set(element, rect);
+      return rect;
+    };
+
+    // Line start detection in Firefox is unreliable via offsetTop for inline fragments.
+    // Compute it from DOMRect:
+    const getTopCached = (element) => getRectCached(element)?.top;
+    const getBottomCached = (element) => getRectCached(element)?.bottom;
+
     // Split the splittedItem into lines.
     // Let's find the elements that start a new line.
 
     const newLineStartNumbers = wrappedWordsArray.reduce(
       (result, currentWord, currentIndex) => {
-        const prevTop = (currentIndex > 0) ? wrappedWordsArray[currentIndex - 1].offsetTop : undefined;
-        const prevHth = (currentIndex > 0) ? wrappedWordsArray[currentIndex - 1].offsetHeight : undefined;
-        const currTop = currentWord.offsetTop;
-        if (currentIndex > 0 && (prevTop + prevHth) <= currTop) {
+        const prevWord = currentIndex > 0 ? wrappedWordsArray[currentIndex - 1] : null;
+        // * prevBottom <= currTop means the next token starts a new line.
+        const prevBottom = currentIndex > 0 ? getBottomCached(prevWord) : undefined;
+        const currTop = getTopCached(currentWord);
+        const isNewLine = (currentIndex > 0) ? (prevBottom <= currTop) : false;
+        if (isNewLine) {
           result.push(currentIndex);
         }
         return result;

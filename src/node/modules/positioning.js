@@ -78,35 +78,17 @@ export function isLastChildOfLastChild(element, rootElement) {
 /**
  * @this {Node}
  */
-export function isLineChanged(current, next) {
-  // * (-1): Browser rounding fix (when converting mm to pixels).
-  const delta = this._DOM.getElementOffsetTop(next)
-              - this._DOM.getElementOffsetBottom(current);
+export function isVerticalDrop(first, second) {
+  // * (-1): Browser subpixel rounding fix.
+  const firstBottom = this._DOM.getElementOffsetBottom(first);
+  const secondTop = this._DOM.getElementOffsetTop(second);
+  const delta = secondTop - firstBottom;
   const vert = delta > (-2);
-  // const gor = this.getElementLeft(current) + this.getElementWidth(current) > this.getElementLeft(next);
-  return vert;
-}
-
-// TODO: isLineChanged vs isLineKept: можно сделать else? они противоположны
-/**
- * @this {Node}
- */
-export function isLineKept(current, next) {
-  // * (-1): Browser rounding fix (when converting mm to pixels).
-  const currentBottom = this._DOM.getElementOffsetBottom(current);
-  const nextTop = this._DOM.getElementOffsetTop(next);
-  const delta = currentBottom - nextTop;
-  const vert = delta >= 2;
-  _isDebug(this) && console.group('isLineKept?')
-  _isDebug(this) && console.log(
-    '\n',
-    vert,
-    '\n',
-    '\n currentBottom', currentBottom, [current],
-    '\n nextTop', nextTop, [next],
+  _isDebug(this) && console.log('%c isVerticalDrop?', "font-weight:bold", vert,
     '\n delta', delta,
+    '\n firstBottom', firstBottom, [first],
+    '\n secondTop', secondTop, [second],
   );
-  _isDebug(this) && console.groupEnd('isLineKept?')
   return vert;
 }
 

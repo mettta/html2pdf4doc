@@ -20,13 +20,16 @@ lines_10_11 = '//html2pdf4doc-text-group[@data-child="8"]'
 
 # On Windows / MacOS / Linux, different fonts and text are split differently.
 # Therefore, here we only check the case with a standalone inline wrapper `<tt>`.
-# We are checking the structure here when `inline_parent` is included in `complex-text-block`,
+# We are checking the structure here when `inline_parent`(wrapped in group_wrapper),
+# is included in `complex-text-block`,
 # and in turn contains text in service wrappers `text-node` and `text-line`.
 parent = '/div[@data-testid="test-block"]'
 ctb = '/html2pdf4doc-complex-text-block'
-inline_parent_part = '/tt[@data-child]'
+# and each line is wrapped into a group
+group_wrapper = '/html2pdf4doc-text-group[@data-child]'
+inline_parent_part = '/tt'
 inner_service_blocks = '/html2pdf4doc-text-node/html2pdf4doc-text-line'
-tester = parent + ctb + inline_parent_part + inner_service_blocks
+tester = parent + ctb + group_wrapper + inline_parent_part + inner_service_blocks
 
 class Test(BaseCase):
     def __init__(self, *args, **kwargs):
