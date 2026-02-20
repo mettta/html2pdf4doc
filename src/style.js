@@ -302,17 +302,6 @@ ${SELECTOR.cleanBottomCut} {
 
   _serviceElementsStyle() {
 
-
-    // * - Firefox and inconsistent values of offset top for inline element
-    // * - Visually, the string fits, but the inline baseline gap below the string
-    // *   causes a compensator + assertions.
-    // *   'display: inline-block' removes spaces between parts of the string,
-    const _makeInlineBlock = 'display: inline-block';
-    // *   but it should leave the text inline in media print,
-    // *   and inside text group.
-    const _keepInline = 'display: inline';
-
-
     const screen = `
 .null {
   display: inline;
@@ -347,20 +336,12 @@ ${SELECTOR.textGroup} {
   display: block;
 }
 
-${SELECTOR.textLine} {
-  ${_makeInlineBlock};
-}
-
-${SELECTOR.textGroup} ${SELECTOR.textLine} {
-  ${_keepInline};
-}
-
 ${SELECTOR.complexTextBlock} {
   display: block;
 }
 
 ${SELECTOR.complexTextBlock} ${SELECTOR.complexTextBlock} {
-  ${_keepInline};
+  display: inline;
 }
 
 ${SELECTOR.printPageBreak} {
@@ -382,9 +363,6 @@ ${SELECTOR.printForcedPageBreak} {
     break-after: page;
   }
 
-  ${SELECTOR.textLine} {
-    ${_keepInline};
-  }
 }
     `;
 
