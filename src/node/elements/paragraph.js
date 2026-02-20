@@ -205,8 +205,11 @@ export default class Paragraph {
           newLine = arr[0];
           newLine.setAttribute('role', '🚫');
           this.strictAssert(arr.length == 0, 'The string cannot be empty (_splitComplexTextBlockIntoLines)')
-        } else if (arr.length == 1) {
-          newLine = arr[0];
+        // } else if (arr.length == 1) {
+        //   newLine = arr[0];
+        // * Wrap every split line in textGroup to stabilize measurements:
+        // * each line gets a block-level wrapper, while inline flow is preserved inside the group,
+        // * keeping the original visual appearance.`
         } else {
           const group = this._node.createTextGroup();
           newLine = group;
