@@ -15,6 +15,7 @@ import buildAppConfig from './appConfig.js';
 import { normalizeLegacyConfigParams } from './config.js';
 import { forceLayoutParticipation } from './utils/forceLayoutParticipation.js';
 import { createMutationQueue } from './mutations/queue.js';
+import { waitForProgrammaticRenderReady } from './renderReady.js';
 
 const CONSOLE_CSS_LABEL = `color:Gray;border:1px solid;`
 
@@ -109,6 +110,15 @@ export default class App {
       this.debugMode && console.log("🕰️ EVENT: window load (event fired before init)");
     }
     this.debugMode && console.timeEnd("⏱️ await window load time");
+
+    // Wait for page-side async renderers before measuring final DOM dimensions.
+    this.debugMode && console.time("⏱️ await renderReady time");
+    await waitForProgrammaticRenderReady({
+      config: this.config,
+      debugMode: this.debugMode,
+      renderReady: this.config.renderReady,
+    });
+    this.debugMode && console.timeEnd("⏱️ await renderReady time");
 
     // * prepare layout (DOM manipulation)
 
