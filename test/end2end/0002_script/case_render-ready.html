@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Test page</title>
+  <link rel="stylesheet" href="../../shared/css/main.css">
+  <script data-init="manual" data-forced-debug-mode="true" src="../../../dist/bundle.js"></script>
+  <script>
+    const renderReady = new Promise(resolve => {
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const asyncBlock = document.createElement('p');
+          asyncBlock.id = 'async-rendered';
+          asyncBlock.textContent = 'Async renderer finished';
+          document.body.appendChild(asyncBlock);
+          resolve();
+        }, 50);
+      });
+    });
+
+    HTML2PDF4DOC.init({ renderReady });
+  </script>
+</head>
+
+<body>
+  <p>Hello world!</p>
+</body>
+
+</html>

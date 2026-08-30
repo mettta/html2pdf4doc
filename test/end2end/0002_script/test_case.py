@@ -31,3 +31,9 @@ class Test(BaseCase):
         self.helper.open_case(path_to_this_test_file_folder, 'module')
         self.helper.assert_text('Hello world!')
         self.helper.assert_no_html2pdf4doc_elements()
+
+    def test_render_ready_programmatic_option(self):
+        async_rendered = '//html2pdf4doc-content-flow//*[@id="async-rendered"]'
+        self.helper.open_case(path_to_this_test_file_folder, 'render-ready')
+        self.helper.wait_for(async_rendered)
+        self.helper.assert_html2pdf4doc_success()

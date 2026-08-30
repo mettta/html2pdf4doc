@@ -6,7 +6,8 @@ import App from './app.js';
 const script = document.currentScript;
 const dataset = script && script.dataset;
 
-let app = null;
+// Holds startup params from the HTML2PDF4DOC's <script src="..."> declaration.
+let scriptDatasetParams = {};
 let isManualInit = false;
 
 if (!dataset) {
@@ -16,12 +17,21 @@ if (!dataset) {
     `Use data-* attributes to pass configuration if needed.`
   );
 } else {
-  app = new App(dataset);
+  scriptDatasetParams = { ...dataset };
   isManualInit = dataset.init === "manual";
   isManualInit && console.info(`HTML2PDF4DOC in manual initialization mode`);
-  !isManualInit && app.render();
+  !isManualInit && new App(scriptDatasetParams).render();
 }
 
-export function init() {
-  isManualInit && app && app.render();
+export function init(params = {}) {
+  if (!isManualInit) {
+    return;
+  }
+
+  const app = new App({
+    ...scriptDatasetParams,
+    // Programmatic params can override the params provided via <script src... data...>
+    ...params,
+  });
+  return app.render();
 }

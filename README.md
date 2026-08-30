@@ -86,7 +86,49 @@ Open server at http://192.168.0.10:8080/test/unit/test.html.
 
 ## HTML2PDF4DOC API
 
-...
+### Programmatic initialization
+
+HTML2PDF4DOC can be initialized from JavaScript by loading the script with
+`data-init="manual"` and then calling `HTML2PDF4DOC.init()`.
+
+```html
+<script data-init="manual" src="html2pdf4doc.min.js"></script>
+<script>
+  HTML2PDF4DOC.init({
+    printPaperSize: 'A4',
+  });
+</script>
+```
+
+Programmatic options override options from the script tag.
+
+### Waiting for async page rendering
+
+HTML2PDF4DOC starts early enough in the page lifecycle to show its loading
+spinner. It does not measure the final document dimensions or paginate the
+printable content until after the browser `window.load` event.
+
+If the page performs additional asynchronous rendering after `load` (for example
+Mermaid or PlantUML diagrams), pass a `renderReady` option to
+`HTML2PDF4DOC.init()`.
+
+`renderReady` can be a promise, a function that returns a promise, or an array of
+promises. HTML2PDF4DOC waits for it after `window.load` and before it measures
+or changes the printable DOM.
+
+```html
+<script data-init="manual" src="html2pdf4doc.min.js"></script>
+<script>
+  HTML2PDF4DOC.init({
+    renderReady: async () => {
+      await Promise.all([
+        mermaid.run(),
+        renderPlantumlBlocks(),
+      ]);
+    },
+  });
+</script>
+```
 
 ## How it works
 
@@ -110,10 +152,14 @@ Here is a general overview of what HTML2PDF4DOC does:
 HTML2PDF4DOC attaches to an existing page and modifies its DOM to transform it into
 a printable page.
 
-HTML2PDF4DOC activates when the window.onload event happens. Users can choose
-specific content for printing, and if nothing is selected, the whole page will
-be prepared for printing. To mark a particular HTML block as printable, add the
-html2pdf4doc attribute to its tag.
+HTML2PDF4DOC starts early in the page lifecycle so it can show its loading
+spinner while the page is still settling. After the page has finished loading,
+and after the optional `renderReady` programmatic option completes, it measures
+the final DOM dimensions and starts paginating the printable content.
+
+Users can choose specific content for printing, and if nothing is selected, the
+whole page will be prepared for printing. To mark a particular HTML block as
+printable, add the html2pdf4doc attribute to its tag.
 
 ### Two layers
 
