@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="keywords" content="HTML2PDF4DOC, end2end" />
+  <meta name="description" content="HTML2PDF4DOC end2end test" />
+  <title>Test page</title>
+  <style>
+    section, div { border: 1px solid green; margin: 10px; }
+  </style>
+  <link rel="stylesheet" href="../../../shared/css/main.css">
+
+  <script
+    defer
+    data-console-assert="true"
+    data-debug-mode="true"
+    data-print-height='100mm'
+    data-print-font-size='12pt'
+    data-page-break-before-selectors='.chapter .intro'
+    data-forced-page-break-selectors=''
+    src="../../../../dist/bundle.js"></script>
+</head>
+
+<body>
+  <!-- The ".intro" element starts the content, but ".chapter" is listed first. -->
+  <h1 class="intro" data-testid="intro">I am on the 1st page</h1>
+  <p>text</p>
+  <div class="chapter" data-testid="section">I am on the 2nd page</div>
+</body>
+
+</html>
