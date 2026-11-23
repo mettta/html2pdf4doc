@@ -1,10 +1,26 @@
 import SELECTOR, { withLegacySelector } from './selector.js';
 
+// * Length options, converted to px below.
+// * They are kept out of the string-to-boolean conversion,
+// * so that "0" and "1" stay lengths.
+const LENGTH_KEYS = [
+  'printLeftMargin',
+  'printRightMargin',
+  'printTopMargin',
+  'printBottomMargin',
+  'printFontSize',
+  'paperWidth',
+  'paperHeight',
+  'headerMargin',
+  'footerMargin',
+  'virtualPagesGap',
+];
+
 export default function createConfig(params) {
 
   // * Normalize string booleans in config object
   // * (e.g. "true" → true)
-  params = convertStringBools(params);
+  params = convertStringBools(params, LENGTH_KEYS);
 
   // ? used in style.js
   let config = {
@@ -108,6 +124,9 @@ export default function createConfig(params) {
       };
   }
 
+  // * Fallback values for length options that the browser rejects.
+  const defaults = config;
+
   // * Apply the defaults and custom configuration
   // * extracted from the script attributes from the DOM.
   config = {
@@ -126,18 +145,9 @@ export default function createConfig(params) {
   console.info('[HTML2PDF4DOC] Config:', config);
 
   // * Convert units to pixels
-  const measurement = {
-    printLeftMargin: config.printLeftMargin,
-    printRightMargin: config.printRightMargin,
-    printTopMargin: config.printTopMargin,
-    printBottomMargin: config.printBottomMargin,
-    printFontSize: config.printFontSize,
-    paperWidth: config.paperWidth,
-    paperHeight: config.paperHeight,
-    headerMargin: config.headerMargin,
-    footerMargin: config.footerMargin,
-    virtualPagesGap: config.virtualPagesGap,
-  }
+  const measurement = Object.fromEntries(
+    LENGTH_KEYS.map(key => [key, config[key]])
+  );
 
   const test = document.createElement('div');
   test.style = `
@@ -149,7 +159,16 @@ export default function createConfig(params) {
 
   Object.entries(measurement)
     .forEach(([key, value]) => {
-      test.style.width = value;
+      // * Reset the width first: the browser ignores an invalid width,
+      // * and the element would keep the width of the previous option.
+      test.style.width = '';
+      test.style.width = toCssLength(value);
+      if (test.style.width === '') {
+        console.warn(
+          `[HTML2PDF4DOC] Config option "${key}" has an invalid length "${value}". Using the default "${defaults[key]}".`
+        );
+        test.style.width = toCssLength(defaults[key]);
+      }
       measurement[key] = `${Math.trunc(test.getBoundingClientRect().width)}px`;
     });
   test.remove();
@@ -199,6 +218,20 @@ export function normalizeLegacyConfigParams(rawParams = {}) {
 }
 
 /**
+ * Returns a CSS length for a length option.
+ * A number or a unitless numeric string, for example "0" or "16", is read as px.
+ *
+ * @param {string|number} value
+ * @returns {string}
+ */
+function toCssLength(value) {
+  if (typeof value === 'number' || /^\s*-?(\d+\.?\d*|\.\d+)\s*$/.test(value)) {
+    return `${parseFloat(value)}px`;
+  }
+  return value;
+}
+
+/**
  * Returns a copy of the object where string values
  * that clearly represent boolean values ("true", "false", "1", "0", "")
  * are converted to true or false.
@@ -210,12 +243,14 @@ export function normalizeLegacyConfigParams(rawParams = {}) {
  *   - the original object is not modified
  *
  * @param {Object} obj — the input object
+ * @param {string[]} [skipKeys] — keys whose values are left unchanged
  * @returns {Object} — a new object with normalized boolean values
  */
-function convertStringBools(obj) {
+function convertStringBools(obj, skipKeys = []) {
   const result = { ...obj };
 
   for (const key in result) {
+    if (skipKeys.includes(key)) continue;
     const value = result[key];
 
     if (typeof value === "string") {
