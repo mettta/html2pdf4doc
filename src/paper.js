@@ -197,10 +197,11 @@ export default class Paper {
       : this._pageNumberRootSelector;
 
     if (container) {
+      // A template may show only the current page number or only the total.
       const currentNum = this._DOM.getElement(this._pageNumberCurrentSelector, container);
       const totalNum = this._DOM.getElement(this._pageNumberTotalSelector, container);
-      this._DOM.setInnerHTML(currentNum, current);
-      this._DOM.setInnerHTML(totalNum, total);
+      currentNum && this._DOM.setInnerHTML(currentNum, current);
+      totalNum && this._DOM.setInnerHTML(totalNum, total);
     }
   }
 
