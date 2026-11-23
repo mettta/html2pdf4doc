@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="keywords" content="HTML2PDF4DOC, end2end" />
+  <meta name="description" content="HTML2PDF4DOC end2end test" />
+  <title>Grid: row taller than a page</title>
+  <link rel="stylesheet" href="../../../shared/css/main.css">
+  <!-- No data-console-assert: the row is expected to overflow its page. -->
+  <script
+    defer
+    data-debug-mode="true"
+    data-markup-debug-mode="true"
+    data-print-height='600px'
+    data-print-width='600px'
+    data-print-left-margin= '50px'
+    data-print-right-margin= '50px'
+    data-print-top-margin= '50px'
+    data-print-bottom-margin= '50px'
+    data-print-font-size='16px'
+    src="../../../../dist/bundle.js"></script>
+</head>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  td,
+  .grid > div {
+    border: 1px solid #006;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+</style>
+
+<body>
+  <!-- The second row has a cell with an explicit height: scaling cannot shrink it. -->
+  <div class="grid">
+    <div data-testid="cell-a">a</div><div>b</div>
+    <div data-testid="cell-c" style="height: 900px">c is taller than a page</div><div>d</div>
+  </div>
+  <p data-testid="closer">After the element.</p>
+</body>
+
+</html>
