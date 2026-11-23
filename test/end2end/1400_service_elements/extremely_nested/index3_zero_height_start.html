@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="keywords" content="HTML2PDF4DOC, end2end" />
+  <meta name="description" content="HTML2PDF4DOC end2end test" />
+  <title>Test page</title>
+
+  <link rel="stylesheet" href="../../../shared/css/main.css">
+  <style>
+    .wrapper { border:1px solid green; }
+    .wrapper .wrapper { border:1px solid orange; margin: 50px 4px; }
+    .wrapper .wrapper .wrapper { border: 1px solid red; }
+    .after { border-bottom-width:4px; border-style: dashed; }
+    .before { border: 1px solid red; border-top-width:4px; border-style: dashed; }
+    .forced { border: 1px solid red; border-top-width:4px; }
+    .no-hang { background-color: cyan ;}
+    .service { margin: 0; padding: 0; width: 100%; outline: 1px solid magenta;}
+  </style>
+
+  <script
+    defer
+    data-markup-debug-mode="true"
+    data-console-assert="true"
+    data-debug-mode="true"
+    data-print-height='100mm'
+    data-print-font-size='12pt'
+    data-page-break-after-selectors='.after'
+    data-page-break-before-selectors='.before'
+    data-forced-page-break-selectors='.forced'
+    data-no-break-selectors=''
+    data-no-hanging-selectors='.no-hang'
+    src="../../../../dist/bundle.js"></script>
+</head>
+
+<body>
+  <!-- An empty element without height starts the content, for example an anchor. -->
+  <div data-testid="zero-height-start"></div>
+
+  <div data-testid="testPointParent1">
+    <div class="wrapper" data-testid="parent-2">
+      <div class="wrapper">
+        <div class="wrapper">
+          <div class="wrapper">
+            <div class="wrapper">
+              <div class="wrapper">
+                <div class="wrapper" data-testid="parent-3">
+                  <div class="wrapper">
+
+                    <div data-testid="admonition">
+                      <H3 class="no-hang" data-testid="admonitionTitle">
+                        NO HANGING
+                      </H3>
+                      <p data-testid="p1">
+                        <b class="no-hang" data-testid="b1">NO HANGING (only-child)</b> and add some test text. And add some test text. And add some test text.
+                        And add some test text.
+                      </p>
+                      <p data-testid="p2">
+                        And add some test text. And add some test text. And add some test text. And add some test text. And add
+                        some test text.
+                        And add some test text. And add some test text. And add some test text. And add some test text. And add
+                        some test text.
+                        And add some test text. And add some test text. And add some test text. And add some test text. And add
+                        some test text.<span data-testid="p2edgeCase"></span>
+
+                        And add some test text. And add some test text. And add some test text. And add some test text. And add some test text. And add
+                        some test text.
+                        And add some test text. And add some test text. And add some test text. And add some test text. And add
+                        some test text.
+                      </p>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p data-testid="p9_last"> And add some test text. And add some test text. And add some test text. And add some test text. And add
+    some test text.<span data-testid="p9end"></p>
+  <p data-testid="p10">
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    And add some test text. And add some test text. And add some test text. And add some test text. And add some test text.
+    <span data-testid="p10end"></p>
+
+</body>
+
+</html>
