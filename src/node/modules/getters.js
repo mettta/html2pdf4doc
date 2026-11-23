@@ -513,19 +513,17 @@ export function getTableEntries(node) {
     }
 
     if (tag === 'TR') {
-      return { ...acc, rows: [...acc.rows, ...curr] };
+      // A TR directly inside TABLE, for example in a table built with DOM APIs.
+      return { ...acc, rows: [...acc.rows, curr] };
     }
 
     _isDebug(this) && curr && console.warn('unexpected:', curr);
 
     return {
       ...acc,
-      unexpected: [
-        ...acc.unexpected,
-        // FIXME: `curr` is a DOM element (non-iterable); spreading will throw.
-        // Replace with `[curr]` in a dedicated fix commit.
-        ...curr, // BUG: Uncaught TypeError: t is not iterable
-      ]
+      // The HTML parser keeps some elements directly inside TABLE,
+      // for example STYLE, SCRIPT, TEMPLATE and INPUT type=hidden.
+      unexpected: [...acc.unexpected, curr],
     };
   }, {
     caption: null,

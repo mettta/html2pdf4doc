@@ -43,6 +43,10 @@ case20_html_file_url = (
     "file:///" + os.path.join(path_to_this_test_file_folder, "case20.html")
 )
 
+case21_html_file_url = (
+    "file:///" + os.path.join(path_to_this_test_file_folder, "case21.html")
+)
+
 
 class Test(BaseCase):
     def __init__(self, *args, **kwargs):
@@ -270,3 +274,13 @@ class Test(BaseCase):
         self.helper.assert_document_has_pages(2)
         # Element with text '(table continued)' is on the 2nd page:
         self.helper.assert_text_on_the_page('(table continued)', 2)
+
+    def test_21(self):
+        # * STYLE and INPUT type=hidden directly inside TABLE.
+        # * Before the fix, getTableEntries spread these elements
+        # * and threw "TypeError: t is not iterable".
+        self.helper.do_open(case21_html_file_url)
+        self.helper.assert_html2pdf4doc_success()
+        self.helper.assert_document_has_pages(3)
+        self.helper.assert_element_on_the_page('//*[@data-testid="row-1"]', 1)
+        self.helper.assert_element_on_the_page('//*[@data-testid="row-40"]', 3)
