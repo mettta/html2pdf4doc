@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="keywords" content="HTML2PDF4DOC, end2end" />
+  <meta name="description" content="HTML2PDF4DOC end2end test" />
+  <title>Test page</title>
+  <style>
+    div { border:1px solid green; margin: 10px; }
+    .after { border-bottom-width:4px; border-style: dashed; }
+    .before { border: 1px solid red; border-top-width:4px; border-style: dashed; }
+  </style>
+  <link rel="stylesheet" href="../../../shared/css/main.css">
+
+  <script
+    defer
+    data-console-assert="true"
+    data-debug-mode="true"
+    data-print-height='100mm'
+    data-print-font-size='12pt'
+    data-page-break-after-selectors='.after'
+    data-page-break-before-selectors='.before'
+    src="../../../../dist/bundle.js"></script>
+</head>
+
+<body>
+  <div class="after" data-testid="testPoint11">I am on the 1st page</div>
+  <!-- Elements that do not take part in the flow sit between "after" and "before". -->
+  <script>window.html2pdf4docTestValue = 1;</script>
+  <div style="display: none;">invisible element</div>
+  <div class="before" data-testid="testPoint21">
+    I am on the 2nd page: "after" and "before" create only 1 page break.
+  </div>
+</body>
+
+</html>

@@ -181,8 +181,9 @@ export default class Pages {
     if (pageEnders.length) {
       const inspectedElement = pageEnders.at(-1);
       const inspectedElementMaxLastChParent = this._node.findLastChildParent(inspectedElement,this._contentFlow) || inspectedElement;
-      const elementAfterInspected = this._DOM.getRightNeighbor(inspectedElementMaxLastChParent);
-      const isInspectedElementEndsContent = this._node.isContentFlowEnd(elementAfterInspected);
+      // * Skip SCRIPT, TEMPLATE, display:none and other non-flow elements
+      // * after the inspected element, as isAfterContentFlowStart() does at the start.
+      const isInspectedElementEndsContent = this._node.isBeforeContentFlowEnd(inspectedElementMaxLastChParent);
       if (isInspectedElementEndsContent) {
         pageEnders.pop()
       };
@@ -215,7 +216,8 @@ export default class Pages {
         element = lastChildParent;
       }
       // If there are AFTER and BEFORE breaks - insert only one.
-      if (!this._node.isForcedPageBreak(this._DOM.getRightNeighbor(element))) {
+      // * Non-flow elements between them do not count.
+      if (!this._node.isForcedPageBreak(this._node.getFlowRightNeighbor(element, 'pageEnders'))) {
         this._DOM.insertAfter(element, this._node.createForcedPageBreak());
         this._debug._ && console.log('📄⤴️ pageEnders • inserted after', {element});
       } // else pass

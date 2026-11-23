@@ -11,6 +11,12 @@ index_html_file_url = (
 index2_html_file_url = (
     "file:///" + os.path.join(path_to_this_test_file_folder, "index2.html")
 )
+index3_html_file_url = (
+    "file:///" + os.path.join(path_to_this_test_file_folder, "index3.html")
+)
+index4_html_file_url = (
+    "file:///" + os.path.join(path_to_this_test_file_folder, "index4.html")
+)
 
 test_element11 = '//*[@data-testid="testPoint11"]'
 test_element12 = '//*[@data-testid="testPoint12"]'
@@ -64,3 +70,22 @@ class Test(BaseCase):
         # should not prevent climbing up the “first children” and assigning
         # the outermost wrapper as the best candidate for page break.
         self.helper.assert_document_has_pages(1)
+
+    def test_003(self):
+        helper = Helper(self)
+        helper.do_open(index3_html_file_url)
+        # After the last "after" element, there are an invisible element
+        # and a SCRIPT. They do not take part in the flow, so the last
+        # "after" element must not create an empty page.
+        self.helper.assert_document_has_pages(1)
+        self.helper.assert_element_on_the_page(test_element11, 1)
+        self.helper.assert_element_on_the_page(test_element12, 1)
+
+    def test_004(self):
+        helper = Helper(self)
+        helper.do_open(index4_html_file_url)
+        # A SCRIPT and an invisible element between "after" and "before"
+        # must not produce a second page break and an empty page.
+        self.helper.assert_document_has_pages(2)
+        self.helper.assert_element_on_the_page(test_element11, 1)
+        self.helper.assert_element_on_the_page(test_element21, 2)
