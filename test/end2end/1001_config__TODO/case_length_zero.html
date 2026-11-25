@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="keywords" content="HTML2PDF4DOC, end2end" />
+  <meta name="description" content="HTML2PDF4DOC end2end test" />
+  <title>Config: zero length</title>
+  <link rel="stylesheet" href="../../shared/css/main.css">
+  <!-- The right margin differs from the others, so that a value
+       taken from another option would be visible. -->
+  <script
+    defer
+    data-console-assert="true"
+    data-debug-mode="true"
+    data-markup-debug-mode="true"
+    data-print-height='600px'
+    data-print-width='600px'
+    data-print-left-margin= '50px'
+    data-print-right-margin= '77px'
+    data-print-top-margin= '0'
+    data-print-bottom-margin= '50px'
+    data-print-font-size='16px'
+    src="../../../dist/bundle.js"></script>
+</head>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+</style>
+
+<body>
+  <p data-testid="content">Hello world!</p>
+</body>
+
+</html>

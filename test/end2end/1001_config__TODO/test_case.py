@@ -58,3 +58,25 @@ class Test(BaseCase):
             f"{style_xpath}[contains(., 'html2pdf4doc-footer [html2pdf4doc-page-number],html2pdf4doc-footer [html2pdf-page-number]')]",
             by=By.XPATH
         )
+
+    #   Length options: the print area height is
+    #   the paper height (600px) minus the top and bottom (50px) margins.
+    #   Before the fix, "0" became false, and a value the browser rejects
+    #   kept the px value of the previous option (the right margin, 77px).
+
+    def test_length_zero(self):
+        self.helper.open_case(path_to_this_test_file_folder, 'length_zero')
+        self.helper.assert_html2pdf4doc_success()
+        assert self.helper.get_print_area_height() == 550
+
+    def test_length_unitless(self):
+        # A unitless number is read as px.
+        self.helper.open_case(path_to_this_test_file_folder, 'length_unitless')
+        self.helper.assert_html2pdf4doc_success()
+        assert self.helper.get_print_area_height() == 520
+
+    def test_length_invalid(self):
+        # An invalid length falls back to the default top margin (12mm, 45px).
+        self.helper.open_case(path_to_this_test_file_folder, 'length_invalid')
+        self.helper.assert_html2pdf4doc_success()
+        assert self.helper.get_print_area_height() == 505
