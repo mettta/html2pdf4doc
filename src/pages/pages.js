@@ -166,13 +166,17 @@ export default class Pages {
     // ** we do not process it further for page breaks.
     // ** This ensures that page breaks are only made where they have not already been made for other reasons.
     // *** And consider that the first element is actually a service element ContentFlowStart.
-    if (pageStarters.length) {
-      const inspectedElement = pageStarters[0];
+    // ** The matches are grouped by selector, not in document order,
+    // ** and nested matches can share the same first-child parent.
+    // ** So check every element, not only the first one in the list.
+    const startsContent = (inspectedElement) => {
       const inspectedElementMaxFChParent = this._node.findFirstChildParent(inspectedElement,this._contentFlow) || inspectedElement;
-      const isInspectedElementStartsContent = this._node.isAfterContentFlowStart(inspectedElementMaxFChParent);
-      if (isInspectedElementStartsContent) {
-        pageStarters.shift();
-      };
+      return this._node.isAfterContentFlowStart(inspectedElementMaxFChParent);
+    };
+    for (let i = pageStarters.length - 1; i >= 0; i -= 1) {
+      if (startsContent(pageStarters[i])) {
+        pageStarters.splice(i, 1);
+      }
     }
     // ** If the element is the LAST child of nested LAST children of a content flow,
     // ** we do not process it further for page breaks.
@@ -193,6 +197,8 @@ export default class Pages {
     pageStarters.length && pageStarters.forEach(element => {
       const candidate = this._node.findBetterForcedPageStarter(element, this._contentFlow);
       this.strictAssert(candidate, 'findBetterForcedPageStarter should return an element. Returns:', candidate);
+      // * Nested matches climb to the same candidate: insert only one break.
+      if (this._hasForcedPageBreakBefore(candidate)) return;
       this._DOM.insertBefore(candidate, this._node.createForcedPageBreak());
       this._debug._ && console.log('📄⤵️ pageStarters • inserted before', {candidate, element});
     });
@@ -203,8 +209,11 @@ export default class Pages {
       if(!this._node.isForcedPageBreak(element)) {
         const candidate = this._node.findBetterForcedPageStarter(element, this._contentFlow);
         this.strictAssert(candidate, 'findBetterForcedPageStarter should return an element. Returns:', candidate);
-        this._DOM.insertBefore(candidate, this._node.createForcedPageBreak());
-        this._debug._ && console.log('📄⤵️⤵️ forcedPageStarters • inserted before', {candidate, element});
+        // * A "before" selector may already have inserted a break here.
+        if (!this._hasForcedPageBreakBefore(candidate)) {
+          this._DOM.insertBefore(candidate, this._node.createForcedPageBreak());
+          this._debug._ && console.log('📄⤵️⤵️ forcedPageStarters • inserted before', {candidate, element});
+        }
       }
       // ** In other case we leave it as it is.
     });
@@ -222,6 +231,15 @@ export default class Pages {
         this._debug._ && console.log('📄⤴️ pageEnders • inserted after', {element});
       } // else pass
     });
+  }
+
+  _hasForcedPageBreakBefore(element) {
+    // * Non-flow elements (SCRIPT, TEMPLATE, display:none, ...) do not count.
+    let left = this._DOM.getLeftNeighbor(element);
+    while (left && this._node.shouldSkipFlowElement(left, { context: '_hasForcedPageBreakBefore' })) {
+      left = this._DOM.getLeftNeighbor(left);
+    }
+    return this._node.isForcedPageBreak(left);
   }
 
   _registerFirstPage() {

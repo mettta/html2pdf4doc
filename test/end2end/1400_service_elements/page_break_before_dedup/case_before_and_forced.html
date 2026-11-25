@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="keywords" content="HTML2PDF4DOC, end2end" />
+  <meta name="description" content="HTML2PDF4DOC end2end test" />
+  <title>Test page</title>
+  <style>
+    section, div { border: 1px solid green; margin: 10px; }
+  </style>
+  <link rel="stylesheet" href="../../../shared/css/main.css">
+
+  <script
+    defer
+    data-console-assert="true"
+    data-debug-mode="true"
+    data-print-height='100mm'
+    data-print-font-size='12pt'
+    data-page-break-before-selectors='.x'
+    data-forced-page-break-selectors='.x'
+    src="../../../../dist/bundle.js"></script>
+</head>
+
+<body>
+  <p data-testid="intro">I am on the 1st page</p>
+  <!-- The element matches both the "before" and the forced selector. -->
+  <div class="x" data-testid="section">I am on the 2nd page</div>
+</body>
+
+</html>
