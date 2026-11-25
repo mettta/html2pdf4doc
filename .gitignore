@@ -18,9 +18,12 @@ coverage/
 # Visual Studio Code
 .vscode/
 
-#
+# Developer
 temp/
 __*
+/.local/
+/.claude/
+/.agents/
 
 # OS generated files
 .DS_Store
