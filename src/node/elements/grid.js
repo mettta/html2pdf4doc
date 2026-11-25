@@ -229,10 +229,12 @@ export default class Grid {
     //  so we multiply the row count by 6 to give enough slack.
     //  If the loop ever exceeds that budget, something is wrong and the guard
     //  fires an assertion instead of spinning forever.
-    const loopGuardLimit = Math.max(1, (currentRows.length || 1) * 6);
+    //  The budget follows the current row count: slicing a tall row replaces it
+    //  with its slices in currentRows, and the loop then visits every slice.
+    //  A single row that spans many pages becomes many rows.
     const tickLoopGuard = createLoopGuard({
       label: 'grid.split',
-      limit: loopGuardLimit,
+      limit: () => Math.max(1, (currentRows.length || 1) * 6),
       assert: this._assert,
     });
 

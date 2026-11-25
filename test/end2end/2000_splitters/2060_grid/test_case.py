@@ -139,3 +139,14 @@ class Test(BaseCase):
         # 2 ----------------------------------
         self.helper.assert_element_on_the_page(chunk_2, 2)
         self.helper.assert_element_on_the_page('//*[@data-testid="closer"]', 2)
+
+    def test_23(self):
+        # * Single grid row with long content spans many pages.
+        # * The row is sliced into more parts than 6 times the initial
+        # * row count. Before the fix, the loop guard of grid.split
+        # * counted only the initial rows and stopped the render.
+        self.helper.open_case(path_to_this_test_file_folder, '23')
+        self.helper.assert_html2pdf4doc_success()
+        self.helper.assert_document_has_pages(14)
+        self.helper.assert_element_on_the_page('//*[@data-testid="chunk-1"]', 1)
+        self.helper.assert_element_on_the_page('//*[@data-testid="chunk-80"]', 14)
