@@ -842,7 +842,9 @@ export default class Table {
       colgroup: this._DOM.cloneNode(tableEntries.colgroup),
       caption: this._DOM.cloneNode(tableEntries.caption),
       thead: this._DOM.cloneNode(tableEntries.thead),
-      tfoot: endId === Infinity ? this._DOM.cloneNode(tableEntries.tfoot) : null,
+      // * Move the original TFOOT, do not clone it: the original table stays
+      // * as the first part, and the TFOOT belongs only to the final part.
+      tfoot: endId === Infinity ? tableEntries.tfoot : null,
       tbody: partEntries,
     });
 
