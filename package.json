@@ -1,6 +1,6 @@
 {
   "name": "html2pdf4doc",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "Splits the selected piece of HTML into pages, prepared for printing, and provides a preview in the browser. Optional to add frontpage and footers.",
   "author": "mettta",
