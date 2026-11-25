@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="keywords" content="HTML2PDF4DOC, end2end" />
+  <meta name="description" content="HTML2PDF4DOC end2end test" />
+  <title>Page number: current only</title>
+  <link rel="stylesheet" href="../../../shared/css/main.css">
+  <script
+    defer
+    data-console-assert="true"
+    data-debug-mode="true"
+    data-markup-debug-mode="true"
+    data-print-height='600px'
+    data-print-width='600px'
+    data-print-left-margin= '50px'
+    data-print-right-margin= '50px'
+    data-print-top-margin= '50px'
+    data-print-bottom-margin= '50px'
+    data-print-font-size='16px'
+    src="../../../../dist/bundle.js"></script>
+</head>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  p {
+    line-height: 20px;
+    margin: 0 0 20px 0;
+  }
+</style>
+
+<body>
+  <p data-testid="p-1">Paragraph 1. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-2">Paragraph 2. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-3">Paragraph 3. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-4">Paragraph 4. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-5">Paragraph 5. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-6">Paragraph 6. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-7">Paragraph 7. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-8">Paragraph 8. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-9">Paragraph 9. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-10">Paragraph 10. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-11">Paragraph 11. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-12">Paragraph 12. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-13">Paragraph 13. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-14">Paragraph 14. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-15">Paragraph 15. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-16">Paragraph 16. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-17">Paragraph 17. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-18">Paragraph 18. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-19">Paragraph 19. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+  <p data-testid="p-20">Paragraph 20. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+
+  <template html2pdf4doc-footer>
+    <div data-testid="footer-number" html2pdf4doc-page-number>Page <span html2pdf4doc-page-number-current></span></div>
+  </template>
+</body>
+
+</html>
