@@ -140,10 +140,31 @@ export function isContentFlowStart(element) {
  */
 export function isAfterContentFlowStart(element) {
   let elementBeforeInspected = this._DOM.getLeftNeighbor(element);
-  while (elementBeforeInspected && this.shouldSkipFlowElement(elementBeforeInspected, { context: 'isAfterContentFlowStart' })) {
+  while (
+    elementBeforeInspected
+    && (
+      this.shouldSkipFlowElement(elementBeforeInspected, { context: 'isAfterContentFlowStart' })
+      || isZeroHeightContent.call(this, elementBeforeInspected)
+    )
+  ) {
     elementBeforeInspected = this._DOM.getLeftNeighbor(elementBeforeInspected);
   }
   return this.isSelectorMatching(elementBeforeInspected, this._selector.contentFlowStart)
+}
+
+/**
+ * An element without height, for example an empty anchor DIV,
+ * does not start the content: a page break before the element
+ * after it would leave an empty first page.
+ * Service markers keep their meaning and are not skipped.
+ *
+ * @this {Node}
+ */
+function isZeroHeightContent(element) {
+  if (this.isContentFlowStart(element) || this.isForcedPageBreak(element)) {
+    return false;
+  }
+  return this._DOM.getElementOffsetHeight(element) === 0;
 }
 
 /**

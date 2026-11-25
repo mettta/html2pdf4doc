@@ -14,6 +14,9 @@ index2_html_file_url = (
 index3_html_file_url = (
     "file:///" + os.path.join(path_to_this_test_file_folder, "index3.html")
 )
+index3_zero_height_start_html_file_url = (
+    "file:///" + os.path.join(path_to_this_test_file_folder, "index3_zero_height_start.html")
+)
 index4_html_file_url = (
     "file:///" + os.path.join(path_to_this_test_file_folder, "index4.html")
 )
@@ -63,6 +66,23 @@ class Test(BaseCase):
     def test_003(self):
         helper = Helper(self)
         helper.do_open(index3_html_file_url)
+
+        self.helper.assert_document_has_pages(6)
+        self.helper.assert_element_on_the_page(parent2, 1)
+        self.helper.assert_element_on_the_page(parent3, 2)
+        self.helper.assert_element_starts_page(parent3, 2)
+        self.helper.assert_element_on_the_page(p1, 2)
+        self.helper.assert_element_on_the_page(p2, 2)
+        self.helper.assert_element_on_the_page(p9last, 4)
+        self.helper.assert_element_starts_page(neutral, 4)
+
+    def test_003_zero_height_start(self):
+        # Same as test_003, but an empty DIV without height starts the content.
+        # Before the fix, the page break climbed to the outer wrapper
+        # after the empty DIV: page 1 held only the empty DIV, and the
+        # wrapper overflowed page 2.
+        helper = Helper(self)
+        helper.do_open(index3_zero_height_start_html_file_url)
 
         self.helper.assert_document_has_pages(6)
         self.helper.assert_element_on_the_page(parent2, 1)
