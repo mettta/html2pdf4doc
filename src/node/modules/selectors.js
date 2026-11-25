@@ -154,6 +154,31 @@ export function isContentFlowEnd(element) {
 }
 
 /**
+ * Returns the right neighbor that takes part in the flow:
+ * skips SCRIPT, TEMPLATE, display:none and other elements
+ * that shouldSkipFlowElement() filters out.
+ *
+ * @this {Node}
+ */
+export function getFlowRightNeighbor(element, context = 'getFlowRightNeighbor') {
+  let sibling = this._DOM.getRightNeighbor(element);
+  while (sibling && this.shouldSkipFlowElement(sibling, { context })) {
+    sibling = this._DOM.getRightNeighbor(sibling);
+  }
+  return sibling;
+}
+
+/**
+ * Mirrors isAfterContentFlowStart() for the end of the content flow.
+ *
+ * @this {Node}
+ */
+export function isBeforeContentFlowEnd(element) {
+  const elementAfterInspected = this.getFlowRightNeighbor(element, 'isBeforeContentFlowEnd');
+  return this.isContentFlowEnd(elementAfterInspected);
+}
+
+/**
  * @this {Node}
  */
 export function isComplexTextBlock(element) {
