@@ -7,6 +7,12 @@
 import { debugFor } from '../../utils/debugFor.js';
 const _isDebug = debugFor('pagination');
 
+// * Rows that already had a full-page attempt.
+// * Scaling cannot always shrink a row, for example a TR or a grid cell
+// * with an explicit height. The caller re-evaluates the row after each
+// * attempt, so without this record the same row would be evaluated forever.
+const rowsWithFullPageAttempt = new WeakSet();
+
 /**
  * 🤖 Shrink only the content of those cells that cause the overflow, using caller-supplied fitters.
  * 🤖 Geometry: keeps the root/row shell and other cells untouched
@@ -125,6 +131,17 @@ export function handleRowOverflow({
     registerPageStartCallback(rowIndex, splitStartRowIndexes, reasonTail);
     return rowIndex - 1;
   }
+
+  //  A row that still overflows a full page after one attempt cannot be fixed
+  //  by moving or scaling it again: keep it in place and let it overflow.
+  const canTrackRow = row !== null && typeof row === 'object';
+  if (canTrackRow && rowsWithFullPageAttempt.has(row)) {
+    if (typeof debugLogger === 'function') {
+      debugLogger('⚠️ Full-page overflow persists after scaling: keep the row', { owner: ownerLabel, rowIndex });
+    }
+    return rowIndex;
+  }
+  canTrackRow && rowsWithFullPageAttempt.add(row);
 
   if (typeof debugLogger === 'function') {
     debugLogger('⚠️ Full-page overflow: scaling row before moving', { owner: ownerLabel, rowIndex, reasonFull });
